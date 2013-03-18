@@ -19,10 +19,10 @@ Usage
 Setup
 ------
 On the server side, the following CORS HTTP Response headers are required:
-> Access-Control-Allow-Headers: Authorization
-> Access-Control-Allow-Methods: GET, OPTIONS
-> Access-Control-Allow-Origin: *
-> Access-Control-Expose-Headers: WWW-Authenticate
+* Access-Control-Allow-Headers: Authorization
+* Access-Control-Allow-Methods: GET, OPTIONS
+* Access-Control-Allow-Origin: *
+* Access-Control-Expose-Headers: WWW-Authenticate
 
 Known issues
 -----
@@ -32,6 +32,6 @@ in the browser.
 
 References
 ------
-> http://www.innovation.ch/personal/ronald/ntlm.html
-> http://download.microsoft.com/download/a/e/6/ae6e4142-aa58-45c6-8dcf-a657e5900cd3/[MS-NLMP].pdf
-> http://download.microsoft.com/download/a/e/6/ae6e4142-aa58-45c6-8dcf-a657e5900cd3/[MS-NTHT].pdf
+* http://www.innovation.ch/personal/ronald/ntlm.html
+* http://download.microsoft.com/download/a/e/6/ae6e4142-aa58-45c6-8dcf-a657e5900cd3/[MS-NLMP].pdf
+* http://download.microsoft.com/download/a/e/6/ae6e4142-aa58-45c6-8dcf-a657e5900cd3/[MS-NTHT].pdf
