@@ -231,25 +231,36 @@ Ntlm.isChallenge = function(xhr) {
     return header && header.indexOf('NTLM') != -1;
 };
 
-Ntlm.authenticate = function(url) {
-    if (!Ntlm.domain || !Ntlm.username || !Ntlm.lmHashedPassword || !Ntlm.ntHashedPassword) {
-        Ntlm.error('No NTLM credentials specified. Use Ntlm.setCredentials(...) before making calls.');
-        return false;
-    }
-    var hostname = Ntlm.getLocation(url).hostname;
-    var msg1 = Ntlm.createMessage1(hostname);
-    var request = new XMLHttpRequest();
-    request.open('GET', url, false);
-    request.setRequestHeader('Authorization', 'NTLM ' + msg1.toBase64());
-    request.send(null);
-    var response = request.getResponseHeader('WWW-Authenticate');
-    var challenge = Ntlm.getChallenge(response);
-
-    var msg3 = Ntlm.createMessage3(challenge, hostname);
-    request.open('GET', url, false);
-    request.setRequestHeader('Authorization', 'NTLM ' + msg3.toBase64());
-    request.send(null);
-    return request.status == 200;
+Ntlm.authenticate = function (url) {
+	if (!Ntlm.domain || !Ntlm.username || !Ntlm.lmHashedPassword || !Ntlm.ntHashedPassword) {
+		Ntlm.error('No NTLM credentials specified. Use Ntlm.setCredentials(...) before making calls.');
+		return false;
+	}
+	var hostname = Ntlm.getLocation(url).hostname;
+	var msg1 = Ntlm.createMessage1(hostname);
+	var authMsg1 = 'NTLM ' + msg1.toBase64();
+	var request = new XMLHttpRequest();
+	
+	request.open('GET', url, false);
+	request.setRequestHeader('Authorization', authMsg1);
+	try {
+		request.send(null);
+	} catch (ex) {
+		return false;
+	}
+	var response = request.getResponseHeader('WWW-Authenticate');
+	var challenge = Ntlm.getChallenge(response);
+	
+	var msg3 = Ntlm.createMessage3(challenge, hostname);
+	var authMsg3 = 'NTLM ' + msg3.toBase64();
+	request.open('GET', url, false);
+	request.setRequestHeader('Authorization', authMsg3);
+	try {
+		request.send(null);
+	} catch (ex) {
+		return false;
+	}
+	return request.status == 200;
 };
 
 /*
