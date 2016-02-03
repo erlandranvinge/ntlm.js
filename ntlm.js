@@ -203,23 +203,46 @@ Ntlm.getLocation = function(url) {
     return l;
 };
 
-Ntlm.setCredentials = function(domain, username, password) {
-    var magic = 'KGS!@#$%'; // Create LM password hash.
-    var lmPassword = password.toUpperCase().substr(0, 14);
-    while (lmPassword.length < 14) lmPassword += '\0';
-    var key1 = Ntlm.createKey(lmPassword);
-    var key2 = Ntlm.createKey(lmPassword.substr(7));
-    var lmHashedPassword = des(key1, magic, 1, 0) + des(key2, magic, 1, 0);
 
-    var ntPassword = ''; // Create NT password hash.
-    for (var i = 0; i < password.length; i++)
-        ntPassword += password.charAt(i) + '\0';
-    var ntHashedPassword = str_md4(ntPassword);
+function Credentials(domain, username, password) {
+	var magic = 'KGS!@#$%'; // Create LM password hash.
+	var lmPassword = password.toUpperCase().substr(0, 14);
+	while (lmPassword.length < 14) lmPassword += '\0';
+	var key1 = Ntlm.createKey(lmPassword);
+	var key2 = Ntlm.createKey(lmPassword.substr(7));
+	var lmHashedPassword = des(key1, magic, 1, 0) + des(key2, magic, 1, 0);
+	
+	var ntPassword = ''; // Create NT password hash.
+	for (var i = 0; i < password.length; i++)
+		ntPassword += password.charAt(i) + '\0';
+	var ntHashedPassword = str_md4(ntPassword);
+	
+	var creds = {
+		domain: domain,
+		username: username,
+		lmHashedPassword: lmHashedPassword,
+		ntHashedPassword: ntHashedPassword
+	};
+	
+	if (this instanceof Credentials) {
+		this.domain = creds.domain;
+		this.username = creds.username;
+		this.lmHashedPassword = creds.lmHashedPassword;
+		this.ntHashedPassword = creds.ntHashedPassword;
+	} else  return creds;
+}
 
-    Ntlm.domain = domain;
-    Ntlm.username = username;
-    Ntlm.lmHashedPassword = lmHashedPassword;
-    Ntlm.ntHashedPassword = ntHashedPassword;
+Ntlm.getCredentials = function (domain, username, password) {
+	return new Credentials(domain, username, password);
+}
+
+Ntlm.setCredentials = function (domain, username, password) {
+	if (username && password) domain = new Credentials(domain, username, password);
+	
+	Ntlm.domain = domain.domain;
+	Ntlm.username = domain.username;
+	Ntlm.lmHashedPassword = domain.lmHashedPassword;
+	Ntlm.ntHashedPassword = domain.ntHashedPassword;
 };
 
 Ntlm.isChallenge = function(xhr) {
