@@ -22,6 +22,7 @@ var Msg = function(data) {
     this.data = [];
     if (!data) return;
     if (data.indexOf('NTLM ') == 0) data = data.substr(5);
+    if (data.indexOf(', Negotiate') > -1) data = data.substring(0, data.indexOf(', Negotiate')); //If we have kerberos enabled
     atob(data).split('').map(function(c) { this.push(c.charCodeAt(0)); }, this.data);
 };
 
